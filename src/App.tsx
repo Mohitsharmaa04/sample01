@@ -1,0 +1,67 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Products from "./pages/Products";
+import Requests from "./pages/Requests";
+import Complaints from "./pages/Complaints";
+import CentralStock from "./pages/CentralStock";
+import Autoclaves from "./pages/Autoclaves";
+import Analytics from "./pages/Analytics";
+import NotFound from "./pages/NotFound";
+import MyAlmirah from "./pages/MyAlmirah";
+import DepartmentStock from "./pages/DepartmentStock";
+import Transactions from "./pages/Transactions";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import StorePage from "./pages/StorePage";
+import HomePage from "./pages/HomeScreen";
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/homepage" element={<HomePage />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/dashboard"
+            element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+          />
+          <Route path="/products" element={<Products />} />
+          <Route
+  path="/homepage"
+  element={
+    <ProtectedRoute>
+      <HomePage />
+    </ProtectedRoute>
+  }
+/>
+          <Route path="/requests" element={<Requests />} />
+          <Route path="/complaints" element={<Complaints />} />
+          <Route path="/central-stock" element={<CentralStock />} />
+          <Route path="/autoclaves" element={<Autoclaves />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/almirah" element={<MyAlmirah />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/department-stock" element={<DepartmentStock />} />
+          <Route path="/stores" element={<StorePage />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
