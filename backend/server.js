@@ -8,29 +8,19 @@ require('dotenv').config();
 
 const app = express();
 
-// Try to connect to MongoDB, but don't fail if it's not available
+// Try to connect to MongoDB (non-blocking)
 try {
   const connectDB = require('./config/db');
-  connectDB();
-  console.log("db connected");
+  connectDB().catch(err => {
+    console.log("⚠️  MongoDB not available - using mock data for auth");
+  });
 } catch (err) {
-  console.log("⚠️  MongoDB not available - using mock data");
+  console.log("⚠️  MongoDB not available - using mock data for auth");
 }
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes by default
-// app.use(cors({
-//   origin: "http://localhost:8080",
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// }));
-
-// // 🔥 Very important: allow OPTIONS for all paths
-// //app.options(cors());
-// app.disable("etag");
-
-
+app.use(cors());
+app.use(express.json());
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -67,15 +57,13 @@ app.post('/api/ocr', upload.single('image'), (req, res) => {
 
         try {
             const parsed = JSON.parse(buffer);
-            return res.json(parsed);  // ← send success + texts array to frontend
+            return res.json(parsed);
         } catch (err) {
             console.error("❌ JSON Parse Error:", buffer);
             res.status(500).json({ error: "OCR parse failed" });
         }
     });
 });
-
-app.use(express.json());
 // app.post('/api/ocr', upload.single('image'), (req, res) => {
 //     if (!req.file) {
 //         return res.status(400).json({ error: 'No file uploaded' });
@@ -132,5 +120,4 @@ app.use('/api/transactions', require('./routes/transactions'));
 app.use(require('./middleware/errorHandler'));
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server started on port ${PORT}`));
