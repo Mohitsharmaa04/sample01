@@ -1,5 +1,4 @@
 const express = require('express');
-const connectDB = require('./config/db');
 const cors = require('cors');
 const multer = require('multer');
 const { spawn } = require('child_process');
@@ -8,9 +7,15 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-// Connect Database
-connectDB();
-console.log("db connected");
+
+// Try to connect to MongoDB, but don't fail if it's not available
+try {
+  const connectDB = require('./config/db');
+  connectDB();
+  console.log("db connected");
+} catch (err) {
+  console.log("⚠️  MongoDB not available - using mock data");
+}
 
 // Middleware
 app.use(cors()); // Enable CORS for all routes by default
