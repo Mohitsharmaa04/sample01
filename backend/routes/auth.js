@@ -1,21 +1,14 @@
 // server/routes/auth.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
 const { register, login } = require('../controllers/authController');
 const { body } = require('express-validator');
 const {auth} = require('../middleware/auth');
 
 // in routes: backend/routes/authRoutes.js
-router.get('/me', auth, async (req, res) => {
+router.get('/me', auth, (req, res) => {
    try {
-    const user = await User.findById(req.user.id).select("-password");
-    if (!user) {
-      console.warn("⚠️ [AUTH /me] User not found in DB for id:", req.user.id);
-      return res.status(404).json({ msg: "User not found" });
-    }
-    
-    res.json(user);
+    res.json({ id: req.user.id, role: req.user.role });
   } catch (err) {
     console.error("❌ [AUTH /me] Error:", err);
     res.status(500).json({ msg: "Server error" });
